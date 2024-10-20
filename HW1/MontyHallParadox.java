@@ -1,32 +1,89 @@
-package ru.gb.homeworks.homework_01;
+package ru.geekbrains;
+
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+/**
+* Урок 1. Фреймворки для автоматизации процесса сборки и тестирования проекта
+* В проекте есть ответы ко всем заданиям. Чтобы обучение было эффективным — вам необходимо сначала самостоятельно решать задания и только потом сверяться с исходниками.
+* Выполняя домашнее задание, вам необходимо разработать своё решение. Скопированная домашняя работа из исходников принята не будет.
+* В качестве домашнего задания вам предложена задача реализовать Java приложение для демонстрации парадокса Монти Холла (Парадокс Монти Холла — Википедия) и наглядно убедиться в верности парадокса (запустить игру в цикле на 1000 и вывести итоговый счет).
+* Вам необходимо:
+* 1. Создать свой Java Maven проект;
+* 2. Добавить зависимости JUnit;
+* 3. Реализовать прикладную задачу - приложение для демонстрации парадокса Монти Холла;
+* 4. Покрыть проект тестами;
+* 5. Использовать абстрактные классы;
+* 6. Использовать параметризованные тесты;
+* 7. Использовать ЖЦ тестов;
+* 8. Написать негативные тесты;
+* 9. Запушить проект на GitHub и сдать ссылку на свой проект как результат выполнения домашнего задания.
+ */
 
 public class MontyHallParadox {
-    private final int numberOfGames;
-    private final boolean switchDoor;
+    static Random random;
+    static Map<Integer, Boolean> res1;       // Статистика для игрока, не меняющего свой выбор.
+    static Map<Integer, Boolean> res2;       // Статистика для игрока, изменяющего свой выбор.
+    static int doorsNum;                      // Количество дверей.
+    static int attempts;                         // Количество попыток.
 
-    public MontyHallParadox(int numberOfGames, boolean switchDoor) {
+    public static void main(String[] args) {
+        random = new Random();
+        res1 = new HashMap<>();
+        res2 = new HashMap<>();
+        doorsNum = 3;
+        attempts = 1000;
 
-        if (numberOfGames <= 0) {
-            throw new IllegalArgumentException("Количество игр должно быть положительным");
+        for (int i = 0; i < attempts; i++) {     // Розыгрыш (1000 попыток).
+            trial(i);
         }
-        this.numberOfGames = numberOfGames;
-        this.switchDoor = switchDoor;
+
+        int win = 0;                             // Статистика для первого игрока, не меняющего свой выбор.
+        for (Map.Entry<Integer, Boolean> entry: res1.entrySet()){
+            if (entry.getValue()){
+                win++;
+            }
+        }
+        System.out.println("\nПарадокс Монти Холла");
+        System.out.println("\nСтатистика выигрышей для игрока, не меняющего свой выбор: ");
+        System.out.println("Количество побед: " + win + " раз из " + attempts + " попыток.");
+
+        win = 0;                                  // Статистика для второго игрока, изменяющего свой выбор.
+        for (Map.Entry<Integer, Boolean> entry: res2.entrySet()){
+            if (entry.getValue()){
+                win++;
+            }
+        }
+        System.out.println("\nСтатистика выигрышей для игрока, изменяющего свой выбор: ");
+        System.out.println("Количество побед: " + win + " раз из " + attempts + " попыток.");
     }
 
-    public int runGame() {
-        int wins = 0;
+    private static void trial(int numRound) {
+        int success = random.nextInt(doorsNumber);
+        int firstChoice = random.nextInt(doorsNumber);
+        int freeOpenDoor = -1;
+        int secondChoice = -1;
 
-        for (int i = 0; i < numberOfGames; i++) {
-            Game game = new Game();
-            Player player = new Player(switchDoor);
-            if (player.play(game)) {
-                wins++;
+        for (int i = 0; i < doorsNum; i++) {
+            if (i != success && i != firstChoice){
+                freeOpenDoor = i;
             }
         }
 
-        System.out.println("Количество игр: " + numberOfGames);
-        System.out.println("Побед с выбранной стратегией: " + wins);
-        System.out.println("Процент побед: " + ((double) wins / numberOfGames) * 100 + "%");
-        return wins;
+        for (int i = 0; i < doorsNum; i++) {            // Игрок не изменяет свой выбор.
+            if (i != freeOpenDoor && i != firstChoice){
+                secondChoice = firstChoice;
+            }
+        }
+        res.put(numRound, success == secondChoice);   // Статистика для первого игрока.
+
+        for (int i = 0; i < doorsNum; i++) {            // Игрок не изменяет свой выбор.
+            if (i != freeOpenDoor && i != firstChoice){
+                secondChoice = i;
+            }
+        }
+        res.put(numRound, success == secondChoice);   // Статистика для второго игрока.
     }
 }
